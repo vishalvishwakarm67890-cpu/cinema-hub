@@ -1,23 +1,31 @@
 # Cinema Hub
 
-A clean, fast **movie discovery catalog** — built as a static site with plain HTML, CSS and JavaScript. No frameworks, no build step, no API keys.
+A **dark, cinematic streaming-style catalog** — built as a static site with plain HTML, CSS and JavaScript. No frameworks, no build step, no API keys.
 
-Browse a hand-picked set of films from India and around the world. Search by title, actor or director, filter by genre, and tap any poster to open a detail view with the synopsis, cast, director, runtime and rating.
+Browse a hand-picked set of films from India and around the world in a Netflix-style layout: a featured hero banner, horizontally scrolling rows, poster thumbnails and a rich detail sheet. Then watch the trailer or find where to stream it **legally**.
 
 ## Features
 
-- **Search** across title, cast, director, genre and year
-- **Genre filters** generated automatically from the catalog
-- **Detail modal** with synopsis, cast chips and key facts
-- **Generated poster art** — each poster is an inline SVG, so there are no external image dependencies
-- **Responsive** layout that works on phones, tablets and desktop
+- **Rotating hero banner** featuring trending films
+- **Horizontal rows** — Trending Now, Top Rated, Made in India, Sci-Fi & Fantasy, Thrills & Crime, Family & Animation
+- **Live search** across title, cast, director, genre, year and language
+- **Detail sheet** with synopsis, director, cast, genres, runtime and rating
+- **My List** — save titles to a personal watchlist (stored in your browser)
+- **Trailer links** to YouTube
+- **"Where to Watch"** links to legal platforms (JustWatch, Netflix, Prime Video, JioHotstar)
+- **Generated poster & backdrop art** — every image is an inline SVG, so there are no external image dependencies
+- **Responsive** — works on phones, tablets and desktop
 - **Zero dependencies** — one self-contained `index.html`
+
+## A note on content
+
+Cinema Hub is a **catalog and discovery** site. It does **not** host, stream or link to any pirated movies. Every "watch" link points to an official, legal platform.
 
 ## Tech
 
-- HTML5 + CSS3 (custom properties, CSS grid, `aspect-ratio`)
-- Vanilla JavaScript (no libraries)
-- Fonts: system font stack, so nothing to download
+- HTML5 + CSS3 (custom properties, CSS grid, `aspect-ratio`, backdrop blur)
+- Vanilla JavaScript — no libraries
+- System font stack, so nothing to download
 
 ## Run locally
 
@@ -40,15 +48,15 @@ Open `index.html`, find the `MOVIES` array in the `<script>` block, and add an o
 {
   title: "Your Film", year: 2024,
   genres: ["Drama"], rating: 8.0, runtime: 120,
-  director: "Director Name",
-  cast: ["Actor One", "Actor Two"],
+  director: "Director Name", region: "India", language: "Hindi",
+  cast: ["Actor One", "Actor Two"], trend: false,
   synopsis: "A short description of the story.",
   colors: ["#4f46e5", "#1e1b4b"]   // poster gradient
 }
 ```
 
-The poster, filters and stats all update automatically.
+The hero, rows, search and stats all update automatically. Rows are defined in the `ROWS` array by a simple `pick` function.
 
 ---
 
-*All film details are provided for information only.*
+*All film details are provided for information only. Cinema Hub links only to official platforms.*
