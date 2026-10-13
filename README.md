@@ -13,7 +13,7 @@ Browse a hand-picked set of films from India and around the world in a Netflix-s
 - **My List** — save titles to a personal watchlist (stored in your browser)
 - **Trailer links** to YouTube
 - **"Where to Watch"** links to legal platforms (JustWatch, Netflix, Prime Video, JioHotstar)
-- **Generated poster & backdrop art** — every image is an inline SVG, so there are no external image dependencies
+- **Real movie posters** — each film uses its actual poster image (via IMDb), with a generated gradient fallback that shows automatically if an image fails to load
 - **Responsive** — works on phones, tablets and desktop
 - **Zero dependencies** — one self-contained `index.html`
 
