@@ -73,6 +73,8 @@
   .btn-play:hover{transform:translateY(-1px);box-shadow:0 10px 26px rgba(255,255,255,.22);}
   .btn-ghost{background:rgba(255,255,255,.12);color:#fff;border:1px solid var(--line-2);backdrop-filter:blur(6px);}
   .btn-ghost:hover{background:rgba(255,255,255,.2);}
+  .btn-brand{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;}
+  .btn-brand:hover{transform:translateY(-1px);box-shadow:0 10px 26px rgba(99,102,241,.45);}
   .hero-dots{display:flex;gap:8px;margin-top:26px;}
   .hero-dots i{width:26px;height:4px;border-radius:99px;background:rgba(255,255,255,.22);cursor:pointer;transition:.2s;}
   .hero-dots i.on{background:var(--brand);width:40px;}
@@ -110,6 +112,11 @@
   .card:hover .thumb .add{opacity:1;}
   .thumb .add:hover{background:#fff;color:#0a0b10;}
   .thumb .add.on{background:var(--brand);border-color:var(--brand);opacity:1;}
+  .thumb .watch{position:absolute;left:8px;right:8px;bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px;
+    background:rgba(139,92,246,.92);color:#fff;font-size:12px;font-weight:700;padding:7px 8px;border-radius:9px;text-decoration:none;
+    opacity:0;transform:translateY(6px);transition:.18s;box-shadow:0 6px 16px rgba(0,0,0,.4);}
+  .card:hover .thumb .watch{opacity:1;transform:none;}
+  .thumb .watch:hover{background:var(--brand-2);}
   .card-title{margin:11px 2px 2px;font-size:14px;font-weight:700;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .card-sub{margin:0 2px;font-size:12.5px;color:var(--muted-2);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
@@ -225,121 +232,126 @@
    1. Curated film catalog (poster = real IMDb poster image)
    ============================================================ */
 const IMG="https://m.media-amazon.com/images/M/";
+/* Each film can have an OPTIONAL link of your own.
+   - link:""            -> no button shown (default)
+   - link:"https://..." -> a button appears on the poster and on the detail page
+   - linkLabel:"..."    -> text on that button (e.g. "Watch on YouTube")
+   Add a legal link (YouTube, your own site, etc.) — not pirated download links. */
 const MOVIES = [
   {title:"RRR", year:2022, genres:["Action","Drama"], rating:7.8, runtime:187, director:"S. S. Rajamouli", region:"India", language:"Telugu",
    cast:["N. T. Rama Rao Jr.","Ram Charan","Alia Bhatt","Ajay Devgn"], trend:true,
    synopsis:"Two revolutionaries from very different worlds cross paths under British rule, and their friendship becomes an explosive, larger-than-life tale of loyalty and uprising.",
-   colors:["#dc2626","#4c0519"], imdb:"tt8178634", poster:IMG+"MV5BNWMwODYyMjQtMTczMi00NTQ1LWFkYjItMGJhMWRkY2E3NDAyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+   colors:["#dc2626","#4c0519"], imdb:"tt8178634", poster:IMG+"MV5BNWMwODYyMjQtMTczMi00NTQ1LWFkYjItMGJhMWRkY2E3NDAyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", link:"https://www.youtube.com/results?search_query=RRR+2022+official+trailer", linkLabel:"Watch on YouTube"},
 
   {title:"Dangal", year:2016, genres:["Drama","Sports"], rating:8.3, runtime:161, director:"Nitesh Tiwari", region:"India", language:"Hindi", trend:true,
    cast:["Aamir Khan","Fatima Sana Shaikh","Sanya Malhotra","Sakshi Tanwar"],
    synopsis:"A former wrestler trains his daughters to become world-class competitors, turning a small-town family into a story about grit, gender and a father's stubborn belief.",
-   colors:["#b45309","#451a03"], imdb:"tt5074352", poster:IMG+"MV5BMTQ4MzQzMzM2Nl5BMl5BanBnXkFtZTgwMTQ1NzU3MDI@._V1_FMjpg_UX1000_.jpg"},
+   colors:["#b45309","#451a03"], imdb:"tt5074352", poster:IMG+"MV5BMTQ4MzQzMzM2Nl5BMl5BanBnXkFtZTgwMTQ1NzU3MDI@._V1_FMjpg_UX1000_.jpg", link:"", linkLabel:"Watch"},
 
   {title:"3 Idiots", year:2009, genres:["Comedy","Drama"], rating:8.4, runtime:170, director:"Rajkumar Hirani", region:"India", language:"Hindi", trend:true,
    cast:["Aamir Khan","R. Madhavan","Sharman Joshi","Kareena Kapoor","Boman Irani"],
    synopsis:"Two friends search for their long-lost college companion, reliving a campus story that challenged everything they were taught about success, ambition and following your own path.",
-   colors:["#f59e0b","#b91c1c"], imdb:"tt1187043", poster:IMG+"MV5BNzc4ZWQ3NmYtODE0Ny00YTQ4LTlkZWItNTBkMGQ0MmUwMmJlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+   colors:["#f59e0b","#b91c1c"], imdb:"tt1187043", poster:IMG+"MV5BNzc4ZWQ3NmYtODE0Ny00YTQ4LTlkZWItNTBkMGQ0MmUwMmJlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", link:"", linkLabel:"Watch"},
 
   {title:"Baahubali: The Beginning", year:2015, genres:["Action","Fantasy"], rating:8.0, runtime:159, director:"S. S. Rajamouli", region:"India", language:"Telugu",
    cast:["Prabhas","Rana Daggubati","Anushka Shetty","Tamannaah"],
    synopsis:"A young man raised in a mountain village discovers a hidden kingdom, a captive queen and a legacy of betrayal that calls him back to reclaim his birthright.",
-   colors:["#0369a1","#0c1a3a"], imdb:"tt2631186", poster:IMG+"MV5BM2YxZThhZmEtYzM0Yi00OWYxLWI4NGYtM2Y2ZDNmOGE0ZWQzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+   colors:["#0369a1","#0c1a3a"], imdb:"tt2631186", poster:IMG+"MV5BM2YxZThhZmEtYzM0Yi00OWYxLWI4NGYtM2Y2ZDNmOGE0ZWQzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", link:"", linkLabel:"Watch"},
 
   {title:"Andhadhun", year:2018, genres:["Thriller","Comedy"], rating:8.2, runtime:139, director:"Sriram Raghavan", region:"India", language:"Hindi", trend:true,
    cast:["Ayushmann Khurrana","Tabu","Radhika Apte","Anil Dhawan"],
    synopsis:"A blind pianist becomes an accidental witness to a crime, and his carefully constructed life unravels in a twisty, darkly funny game of cat and mouse.",
-   colors:["#0f766e","#042f2e"], imdb:"tt8108198", poster:IMG+"MV5BZjc5OWIzOTgtMmM2ZS00ZjZhLTkyZWItMTFjYTc0NWQ4NzhkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+   colors:["#0f766e","#042f2e"], imdb:"tt8108198", poster:IMG+"MV5BZjc5OWIzOTgtMmM2ZS00ZjZhLTkyZWItMTFjYTc0NWQ4NzhkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", link:"", linkLabel:"Watch"},
 
   {title:"Gully Boy", year:2019, genres:["Drama","Musical"], rating:7.9, runtime:153, director:"Zoya Akhtar", region:"India", language:"Hindi",
    cast:["Ranveer Singh","Alia Bhatt","Siddhant Chaturvedi","Kalki Koechlin"],
    synopsis:"A young man from a Mumbai slum finds his voice in street rap, chasing a dream that his circumstances were never meant to allow.",
-   colors:["#7c3aed","#312e81"], imdb:"tt2395469", poster:IMG+"MV5BOWFkY2M3NDctZGEzMS00M2VmLTgzMTAtZWFiNjVmZDc5NWFjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+   colors:["#7c3aed","#312e81"], imdb:"tt2395469", poster:IMG+"MV5BOWFkY2M3NDctZGEzMS00M2VmLTgzMTAtZWFiNjVmZDc5NWFjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", link:"", linkLabel:"Watch"},
 
   {title:"Drishyam", year:2015, genres:["Thriller","Drama"], rating:8.2, runtime:163, director:"Nishikant Kamat", region:"India", language:"Hindi",
    cast:["Ajay Devgn","Tabu","Shriya Saran","Rajat Kapoor"],
    synopsis:"An ordinary cable operator goes to extraordinary lengths to protect his family after an accident, matching wits with a relentless police force.",
-   colors:["#1f2937","#0b1220"], imdb:"tt4430212", poster:IMG+"MV5BMDRlZWFkMjEtYmYyZi00MmE5LWIzMzUtYmM2N2M5Y2UxZDJjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+   colors:["#1f2937","#0b1220"], imdb:"tt4430212", poster:IMG+"MV5BMDRlZWFkMjEtYmYyZi00MmE5LWIzMzUtYmM2N2M5Y2UxZDJjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", link:"", linkLabel:"Watch"},
 
   {title:"Lagaan", year:2001, genres:["Drama","Musical"], rating:8.1, runtime:224, director:"Ashutosh Gowariker", region:"India", language:"Hindi",
    cast:["Aamir Khan","Gracy Singh","Rachel Shelley","Paul Blackthorne"],
    synopsis:"Villagers in colonial India stake three years of tax on a single cricket match against their British rulers, turning a game into an act of quiet rebellion.",
-   colors:["#ca8a04","#78350f"], imdb:"tt0169102", poster:IMG+"MV5BM2FmODM4OTktOTRjOS00ZTIzLWIzZjAtMDBhOGEzYThkNzMzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+   colors:["#ca8a04","#78350f"], imdb:"tt0169102", poster:IMG+"MV5BM2FmODM4OTktOTRjOS00ZTIzLWIzZjAtMDBhOGEzYThkNzMzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", link:"", linkLabel:"Watch"},
 
   {title:"Taare Zameen Par", year:2007, genres:["Drama","Family"], rating:8.3, runtime:165, director:"Aamir Khan", region:"India", language:"Hindi",
    cast:["Darsheel Safary","Aamir Khan","Tisca Chopra","Vipin Sharma"],
    synopsis:"A dyslexic child is misunderstood by everyone until an unconventional art teacher recognises his struggle and helps him see his own brilliance.",
-   colors:["#0ea5e9","#1d4ed8"], imdb:"tt0986264", poster:IMG+"MV5BZTI0ZGRiMDEtNGNjMS00MGU4LWI3OTktNzcxMDZmZTk3MTljXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+   colors:["#0ea5e9","#1d4ed8"], imdb:"tt0986264", poster:IMG+"MV5BZTI0ZGRiMDEtNGNjMS00MGU4LWI3OTktNzcxMDZmZTk3MTljXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", link:"", linkLabel:"Watch"},
 
   {title:"Zindagi Na Milegi Dobara", year:2011, genres:["Drama","Comedy"], rating:8.1, runtime:155, director:"Zoya Akhtar", region:"India", language:"Hindi",
    cast:["Hrithik Roshan","Farhan Akhtar","Abhay Deol","Katrina Kaif"],
    synopsis:"Three friends take a road trip across Spain before one of them marries, and the journey forces each to face the fears he has been running from.",
-   colors:["#0891b2","#164e63"], imdb:"tt1562872", poster:IMG+"MV5BOGIzYzg5NzItNDRkYS00NmIzLTk3NzQtZWYwY2VlZDhiYWQ4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+   colors:["#0891b2","#164e63"], imdb:"tt1562872", poster:IMG+"MV5BOGIzYzg5NzItNDRkYS00NmIzLTk3NzQtZWYwY2VlZDhiYWQ4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", link:"", linkLabel:"Watch"},
 
   {title:"Interstellar", year:2014, genres:["Sci-Fi","Drama"], rating:8.7, runtime:169, director:"Christopher Nolan", region:"Hollywood", language:"English", trend:true,
    cast:["Matthew McConaughey","Anne Hathaway","Jessica Chastain","Michael Caine"],
    synopsis:"As Earth becomes unlivable, a former pilot leads a mission through a wormhole to find a new home for humanity, weighed down by the family he leaves behind.",
-   colors:["#1e3a8a","#050b1f"], imdb:"tt0816692", poster:IMG+"MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+   colors:["#1e3a8a","#050b1f"], imdb:"tt0816692", poster:IMG+"MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", link:"", linkLabel:"Watch"},
 
   {title:"Inception", year:2010, genres:["Sci-Fi","Thriller"], rating:8.8, runtime:148, director:"Christopher Nolan", region:"Hollywood", language:"English", trend:true,
    cast:["Leonardo DiCaprio","Joseph Gordon-Levitt","Elliot Page","Tom Hardy"],
    synopsis:"A specialist who steals secrets from inside dreams is offered one last job: plant an idea in a target's mind, a task that means going deeper than anyone has gone before.",
-   colors:["#475569","#0b1220"], imdb:"tt1375666", poster:IMG+"MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@._V1_FMjpg_UX1000_.jpg"},
+   colors:["#475569","#0b1220"], imdb:"tt1375666", poster:IMG+"MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@._V1_FMjpg_UX1000_.jpg", link:"", linkLabel:"Watch"},
 
   {title:"The Dark Knight", year:2008, genres:["Action","Thriller"], rating:9.0, runtime:152, director:"Christopher Nolan", region:"Hollywood", language:"English",
    cast:["Christian Bale","Heath Ledger","Aaron Eckhart","Gary Oldman"],
    synopsis:"Batman faces an anarchic criminal who wants to prove that anyone can be broken, forcing a hero to confront how far he will go without becoming what he fights.",
-   colors:["#111827","#1f2937"], imdb:"tt0468569", poster:IMG+"MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@._V1_FMjpg_UX1000_.jpg"},
+   colors:["#111827","#1f2937"], imdb:"tt0468569", poster:IMG+"MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@._V1_FMjpg_UX1000_.jpg", link:"", linkLabel:"Watch"},
 
   {title:"Parasite", year:2019, genres:["Thriller","Drama"], rating:8.5, runtime:132, director:"Bong Joon-ho", region:"World", language:"Korean", trend:true,
    cast:["Song Kang-ho","Lee Sun-kyun","Cho Yeo-jeong","Choi Woo-shik"],
    synopsis:"A struggling family schemes its way into the household of a wealthy one, and the arrangement spirals into a razor-sharp study of class, hunger and hidden rooms.",
-   colors:["#065f46","#022c22"], imdb:"tt6751668", poster:IMG+"MV5BYjk1Y2U4MjQtY2ZiNS00OWQyLWI3MmYtZWUwNmRjYWRiNWNhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+   colors:["#065f46","#022c22"], imdb:"tt6751668", poster:IMG+"MV5BYjk1Y2U4MjQtY2ZiNS00OWQyLWI3MmYtZWUwNmRjYWRiNWNhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", link:"", linkLabel:"Watch"},
 
   {title:"Dune", year:2021, genres:["Sci-Fi","Adventure"], rating:8.0, runtime:155, director:"Denis Villeneuve", region:"Hollywood", language:"English", trend:true,
    cast:["Timothee Chalamet","Rebecca Ferguson","Zendaya","Oscar Isaac"],
    synopsis:"The heir of a noble house is thrust into a brutal desert world where spice, prophecy and betrayal decide the fate of an empire.",
-   colors:["#c2410c","#431407"], imdb:"tt1160419", poster:IMG+"MV5BNWIyNmU5MGYtZDZmNi00ZjAwLWJlYjgtZTc0ZGIxMDE4ZGYwXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+   colors:["#c2410c","#431407"], imdb:"tt1160419", poster:IMG+"MV5BNWIyNmU5MGYtZDZmNi00ZjAwLWJlYjgtZTc0ZGIxMDE4ZGYwXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", link:"", linkLabel:"Watch"},
 
   {title:"Oppenheimer", year:2023, genres:["Drama","History"], rating:8.3, runtime:180, director:"Christopher Nolan", region:"Hollywood", language:"English",
    cast:["Cillian Murphy","Emily Blunt","Robert Downey Jr.","Matt Damon"],
    synopsis:"The story of the physicist who led the race to build the atomic bomb, and the moral reckoning that consumed the rest of his life.",
-   colors:["#ea580c","#1c1917"], imdb:"tt15398776", poster:IMG+"MV5BN2JkMDc5MGQtZjg3YS00NmFiLWIyZmQtZTJmNTM5MjVmYTQ4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+   colors:["#ea580c","#1c1917"], imdb:"tt15398776", poster:IMG+"MV5BN2JkMDc5MGQtZjg3YS00NmFiLWIyZmQtZTJmNTM5MjVmYTQ4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", link:"", linkLabel:"Watch"},
 
   {title:"Knives Out", year:2019, genres:["Thriller","Comedy"], rating:7.9, runtime:130, director:"Rian Johnson", region:"Hollywood", language:"English",
    cast:["Daniel Craig","Ana de Armas","Chris Evans","Jamie Lee Curtis"],
    synopsis:"When a wealthy novelist dies after his birthday party, a gentleman detective untangles a family of suspects where everyone has something to hide.",
-   colors:["#7f1d1d","#1c1917"], imdb:"tt8946378", poster:IMG+"MV5BZDU5ZTRkYmItZjg0Mi00ZTQwLThjMWItNWM3MTMxMzVjZmVjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+   colors:["#7f1d1d","#1c1917"], imdb:"tt8946378", poster:IMG+"MV5BZDU5ZTRkYmItZjg0Mi00ZTQwLThjMWItNWM3MTMxMzVjZmVjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", link:"", linkLabel:"Watch"},
 
   {title:"Mad Max: Fury Road", year:2015, genres:["Action","Sci-Fi"], rating:8.1, runtime:120, director:"George Miller", region:"Hollywood", language:"English",
    cast:["Tom Hardy","Charlize Theron","Nicholas Hoult","Hugh Keays-Byrne"],
    synopsis:"In a scorched wasteland, a drifter and a rebel commander flee a tyrant across the desert in one relentless, roaring chase for freedom.",
-   colors:["#ea580c","#7c2d12"], imdb:"tt1392190", poster:IMG+"MV5BZDRkODJhOTgtOTc1OC00NTgzLTk4NjItNDgxZDY4YjlmNDY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+   colors:["#ea580c","#7c2d12"], imdb:"tt1392190", poster:IMG+"MV5BZDRkODJhOTgtOTc1OC00NTgzLTk4NjItNDgxZDY4YjlmNDY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", link:"", linkLabel:"Watch"},
 
   {title:"Spirited Away", year:2001, genres:["Animation","Fantasy"], rating:8.6, runtime:125, director:"Hayao Miyazaki", region:"World", language:"Japanese",
    cast:["Rumi Hiiragi","Miyu Irino","Mari Natsuki","Takashi Naito"],
    synopsis:"A shy girl wanders into a world of spirits and must work in a bathhouse for the gods to free her parents and find her way home.",
-   colors:["#0891b2","#6d28d9"], imdb:"tt0245429", poster:IMG+"MV5BNTEyNmEwOWUtYzkyOC00ZTQ4LTllZmUtMjk0Y2YwOGUzYjRiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+   colors:["#0891b2","#6d28d9"], imdb:"tt0245429", poster:IMG+"MV5BNTEyNmEwOWUtYzkyOC00ZTQ4LTllZmUtMjk0Y2YwOGUzYjRiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", link:"", linkLabel:"Watch"},
 
   {title:"Spider-Man: Into the Spider-Verse", year:2018, genres:["Animation","Action"], rating:8.4, runtime:117, director:"Bob Persichetti", region:"Hollywood", language:"English",
    cast:["Shameik Moore","Jake Johnson","Hailee Steinfeld","Mahershala Ali"],
    synopsis:"A Brooklyn teenager gains spider powers and joins heroes from other dimensions to save the multiverse, discovering that anyone can wear the mask.",
-   colors:["#db2777","#1e3a8a"], imdb:"tt4633694", poster:IMG+"MV5BMjMwNDkxMTgzOF5BMl5BanBnXkFtZTgwNTkwNTQ3NjM@._V1_FMjpg_UX1000_.jpg"},
+   colors:["#db2777","#1e3a8a"], imdb:"tt4633694", poster:IMG+"MV5BMjMwNDkxMTgzOF5BMl5BanBnXkFtZTgwNTkwNTQ3NjM@._V1_FMjpg_UX1000_.jpg", link:"", linkLabel:"Watch"},
 
   {title:"Coco", year:2017, genres:["Animation","Family"], rating:8.4, runtime:105, director:"Lee Unkrich", region:"Hollywood", language:"English",
    cast:["Anthony Gonzalez","Gael Garcia Bernal","Benjamin Bratt","Alanna Ubach"],
    synopsis:"A boy who dreams of music is pulled into the Land of the Dead, where he uncovers the truth about his family and the songs that connect them.",
-   colors:["#9333ea","#c2410c"], imdb:"tt2380307", poster:IMG+"MV5BMDIyM2E2NTAtMzlhNy00ZGUxLWI1NjgtZDY5MzhiMDc5NGU3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+   colors:["#9333ea","#c2410c"], imdb:"tt2380307", poster:IMG+"MV5BMDIyM2E2NTAtMzlhNy00ZGUxLWI1NjgtZDY5MzhiMDc5NGU3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", link:"", linkLabel:"Watch"},
 
   {title:"Toy Story", year:1995, genres:["Animation","Family"], rating:8.3, runtime:81, director:"John Lasseter", region:"Hollywood", language:"English",
    cast:["Tom Hanks","Tim Allen","Don Rickles","Jim Varney"],
    synopsis:"A cowboy doll's world is upended by a flashy new space toy, and the two rivals must work together to get home in the first fully computer-animated feature.",
-   colors:["#2563eb","#f59e0b"], imdb:"tt0114709", poster:IMG+"MV5BZTA3OWVjOWItNjE1NS00NzZiLWE1MjgtZDZhMWI1ZTlkNzYwXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+   colors:["#2563eb","#f59e0b"], imdb:"tt0114709", poster:IMG+"MV5BZTA3OWVjOWItNjE1NS00NzZiLWE1MjgtZDZhMWI1ZTlkNzYwXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", link:"", linkLabel:"Watch"},
 
   {title:"The Shawshank Redemption", year:1994, genres:["Drama"], rating:9.3, runtime:142, director:"Frank Darabont", region:"Hollywood", language:"English",
    cast:["Tim Robbins","Morgan Freeman","Bob Gunton","William Sadler"],
    synopsis:"A banker sentenced to life in prison forms an unlikely friendship and holds on to hope across decades, proving that some things no wall can take away.",
-   colors:["#92400e","#3b1608"], imdb:"tt0111161", poster:IMG+"MV5BMDAyY2FhYjctNDc5OS00MDNlLThiMGUtY2UxYWVkNGY2ZjljXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"}
+   colors:["#92400e","#3b1608"], imdb:"tt0111161", poster:IMG+"MV5BMDAyY2FhYjctNDc5OS00MDNlLThiMGUtY2UxYWVkNGY2ZjljXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", link:"", linkLabel:"Watch"}
 ];
 
 /* ============================================================
@@ -436,6 +448,7 @@ function cardHTML(m){
       ${posterImg(m,i)}
       <span class="rate">&#9733; ${m.rating.toFixed(1)}</span>
       <button class="add ${myList.has(i)?"on":""}" title="My List" onclick="event.stopPropagation();toggleList(${i},this)">${myList.has(i)?"&#10003;":"&#43;"}</button>
+      ${m.link?`<a class="watch" href="${esc(m.link)}" target="_blank" rel="noopener" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><path d="M8 5v14l11-7z"/></svg>${esc(m.linkLabel||"Watch")}</a>`:""}
     </div>
     <div class="card-title">${esc(m.title)}</div>
     <div class="card-sub">${m.year} &middot; ${esc(m.genres[0])}</div>
@@ -540,6 +553,7 @@ function openDetail(m){
           <span class="dotsep"></span><span>${esc(m.language)}</span>
         </div>
         <div class="sheet-actions">
+          ${m.link?`<a class="btn btn-brand" href="${esc(m.link)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>${esc(m.linkLabel||"Watch Now")}</a>`:""}
           <a class="btn btn-play" href="${trailerUrl(m)}" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Watch Trailer</a>
           <a class="btn btn-ghost" href="${whereUrl(m)}" target="_blank" rel="noopener">

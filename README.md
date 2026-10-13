@@ -51,11 +51,32 @@ Open `index.html`, find the `MOVIES` array in the `<script>` block, and add an o
   director: "Director Name", region: "India", language: "Hindi",
   cast: ["Actor One", "Actor Two"], trend: false,
   synopsis: "A short description of the story.",
-  colors: ["#4f46e5", "#1e1b4b"]   // poster gradient
+  colors: ["#4f46e5", "#1e1b4b"],          // fallback gradient if the poster fails
+  poster: "https://.../poster.jpg",        // the poster image URL
+  imdb: "tt1234567",                       // IMDb id (optional)
+  link: "",                                // YOUR OWN LINK (see below)
+  linkLabel: "Watch"                       // text on that link's button
 }
 ```
 
 The hero, rows, search and stats all update automatically. Rows are defined in the `ROWS` array by a simple `pick` function.
+
+## Adding your own link to a film
+
+Every film has an optional `link` field. Fill it with your own link and a button appears automatically — on the poster (on hover) and on the film's detail page.
+
+```js
+link: "https://www.youtube.com/watch?v=XXXXXXXXXXX",
+linkLabel: "Watch on YouTube"
+```
+
+- `link: ""` (empty) — no button is shown (this is the default).
+- `link: "https://..."` — shows a purple **Watch** button that opens your link in a new tab.
+- `linkLabel: "..."` — the text on that button; if you leave it out it says **Watch**.
+
+Example — one film in the catalog (`RRR`) already has a link filled in so you can see how it looks. Just replace the URL with your own.
+
+> Please point `link` at a legitimate source (a YouTube video, your own site, an official streaming page). Do not use it for pirated download links.
 
 ---
 
