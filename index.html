@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cinema Hub — Discover Movies</title>
+<meta name="description" content="Cinema Hub — a clean movie discovery catalog. Browse, search and filter curated films." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AC%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{
+    --bg:#f6f7fb;
+    --surface:#ffffff;
+    --text:#1f2430;
+    --muted:#6b7280;
+    --line:#e8eaf0;
+    --accent:#4f46e5;
+    --accent-soft:#eef0ff;
+    --gold:#f5a623;
+    --shadow:0 1px 2px rgba(16,24,40,.04), 0 8px 24px rgba(16,24,40,.06);
+    --radius:16px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    line-height:1.5;
+  }
+  a{color:inherit;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px;}
+
+  /* ---------- Header ---------- */
+  header.top{
+    position:sticky;top:0;z-index:40;
+    background:rgba(255,255,255,.85);
+    backdrop-filter:saturate(180%) blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .top-inner{display:flex;align-items:center;gap:16px;padding:14px 20px;max-width:1180px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;letter-spacing:-.02em;}
+  .brand .dot{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+    background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-size:16px;}
+  .brand small{display:block;font-weight:500;font-size:11px;color:var(--muted);letter-spacing:.02em;}
+  .search{
+    margin-left:auto;position:relative;flex:1;max-width:380px;
+  }
+  .search input{
+    width:100%;padding:11px 14px 11px 40px;border:1px solid var(--line);
+    background:var(--surface);border-radius:12px;font-size:14px;color:var(--text);outline:none;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .search input:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);}
+  .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--muted);}
+
+  /* ---------- Hero ---------- */
+  .hero{padding:38px 0 10px;}
+  .hero h1{margin:0 0 8px;font-size:32px;letter-spacing:-.03em;}
+  .hero p{margin:0;color:var(--muted);font-size:15px;max-width:620px;}
+  .stats{display:flex;gap:22px;margin-top:18px;flex-wrap:wrap;}
+  .stat b{display:block;font-size:22px;letter-spacing:-.02em;}
+  .stat span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+
+  /* ---------- Filters ---------- */
+  .filters{display:flex;gap:8px;flex-wrap:wrap;padding:22px 0 6px;position:sticky;top:61px;z-index:30;}
+  .chip{
+    border:1px solid var(--line);background:var(--surface);color:var(--muted);
+    padding:8px 15px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;
+    transition:all .15s;
+  }
+  .chip:hover{border-color:#d5d8e2;color:var(--text);}
+  .chip.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+  /* ---------- Grid ---------- */
+  .grid{
+    display:grid;gap:22px;padding:20px 0 60px;
+    grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  }
+  .card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;cursor:pointer;box-shadow:var(--shadow);
+    transition:transform .18s ease, box-shadow .18s ease;
+    display:flex;flex-direction:column;
+  }
+  .card:hover{transform:translateY(-4px);box-shadow:0 2px 4px rgba(16,24,40,.06),0 18px 36px rgba(16,24,40,.12);}
+  .poster{position:relative;aspect-ratio:2/3;width:100%;display:block;background:#e9ebf2;}
+  .poster svg{width:100%;height:100%;display:block;}
+  .rate{
+    position:absolute;top:10px;right:10px;background:rgba(255,255,255,.94);
+    color:#1f2430;font-size:12px;font-weight:800;padding:4px 8px;border-radius:8px;
+    display:flex;align-items:center;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,.15);
+  }
+  .rate .star{color:var(--gold);}
+  .card-body{padding:12px 14px 15px;}
+  .card-body h3{margin:0 0 3px;font-size:15px;letter-spacing:-.01em;line-height:1.25;}
+  .meta{font-size:12.5px;color:var(--muted);}
+  .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px;}
+  .tag{font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:3px 9px;border-radius:999px;}
+
+  .empty{text-align:center;padding:70px 20px;color:var(--muted);}
+  .empty b{color:var(--text);display:block;font-size:18px;margin-bottom:6px;}
+
+  /* ---------- Modal ---------- */
+  .overlay{
+    position:fixed;inset:0;background:rgba(20,23,34,.55);backdrop-filter:blur(3px);
+    display:none;align-items:flex-start;justify-content:center;z-index:100;padding:28px 16px;overflow:auto;
+  }
+  .overlay.open{display:flex;}
+  .modal{
+    background:var(--surface);border-radius:20px;max-width:760px;width:100%;
+    box-shadow:0 30px 80px rgba(16,24,40,.35);overflow:hidden;margin:auto;
+    animation:pop .22s ease;
+  }
+  @keyframes pop{from{opacity:0;transform:translateY(14px) scale(.98);}to{opacity:1;transform:none;}}
+  .modal-head{display:flex;gap:22px;padding:22px;}
+  .modal-poster{width:180px;flex:0 0 180px;border-radius:14px;overflow:hidden;background:#e9ebf2;}
+  .modal-poster svg{width:100%;height:100%;display:block;}
+  .modal-info h2{margin:0 0 6px;font-size:24px;letter-spacing:-.02em;}
+  .modal-info .sub{color:var(--muted);font-size:14px;margin-bottom:12px;}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13.5px;margin:14px 0;}
+  .kv dt{color:var(--muted);}
+  .kv dd{margin:0;font-weight:600;}
+  .stars{color:var(--gold);font-weight:800;}
+  .modal-body{padding:0 22px 24px;}
+  .modal-body h4{margin:16px 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);}
+  .modal-body p{margin:0;font-size:14.5px;color:#3b4152;}
+  .cast{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+  .cast span{background:var(--bg);border:1px solid var(--line);padding:5px 11px;border-radius:999px;font-size:12.5px;}
+  .close{
+    position:absolute;top:14px;right:16px;background:#fff;border:1px solid var(--line);
+    width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;color:var(--muted);
+    display:grid;place-items:center;line-height:1;
+  }
+  .close:hover{color:var(--text);}
+  .modal-wrap{position:relative;max-width:760px;width:100%;margin:auto;}
+
+  footer{border-top:1px solid var(--line);padding:26px 0;color:var(--muted);font-size:13px;text-align:center;}
+
+  @media (max-width:640px){
+    .hero h1{font-size:25px;}
+    .brand small{display:none;}
+    .search{max-width:none;}
+    .modal-head{flex-direction:column;gap:16px;}
+    .modal-poster{width:140px;flex-basis:140px;}
+    .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;}
+    .filters{top:59px;overflow-x:auto;flex-wrap:nowrap;padding-bottom:10px;}
+    .chip{white-space:nowrap;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <span class="dot">&#127916;</span>
+      <span>Cinema Hub<small>Discover movies</small></span>
+    </div>
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="q" type="search" placeholder="Search by title, actor or director..." autocomplete="off" />
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Find your next favourite film</h1>
+    <p>A hand-picked catalog of great cinema from India and around the world. Search, filter by genre, and tap any poster for the full story, cast and ratings.</p>
+    <div class="stats">
+      <div class="stat"><b id="sCount">0</b><span>Films</span></div>
+      <div class="stat"><b id="sGenres">0</b><span>Genres</span></div>
+      <div class="stat"><b id="sYears">&mdash;</b><span>Years</span></div>
+    </div>
+  </section>
+
+  <div class="filters" id="filters"></div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" style="display:none;">
+    <b>No films found</b>
+    Try a different search or pick another genre.
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">Cinema Hub &mdash; a static movie catalog. Built with plain HTML, CSS &amp; JavaScript. All film details are for information only.</div>
+</footer>
+
+<div class="overlay" id="overlay">
+  <div class="modal-wrap">
+    <div class="modal" id="modal"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   Curated film catalog
+   ============================================================ */
+const MOVIES = [
+  {title:"3 Idiots", year:2009, genres:["Comedy","Drama"], rating:8.4, runtime:170, director:"Rajkumar Hirani",
+   cast:["Aamir Khan","R. Madhavan","Sharman Joshi","Kareena Kapoor","Boman Irani"],
+   synopsis:"Two friends search for their long-lost college companion, and along the way relive a campus story that challenged everything they were taught about success, ambition and following your own path.",
+   colors:["#f59e0b","#ef4444"]},
+
+  {title:"Dangal", year:2016, genres:["Drama","Sports"], rating:8.3, runtime:161, director:"Nitesh Tiwari",
+   cast:["Aamir Khan","Fatima Sana Shaikh","Sanya Malhotra","Sakshi Tanwar"],
+   synopsis:"A former wrestler trains his daughters to become world-class competitors, turning a small-town family into a story about grit, gender and a father's stubborn belief.",
+   colors:["#b45309","#78350f"]},
+
+  {title:"Lagaan", year:2001, genres:["Drama","Musical"], rating:8.1, runtime:224, director:"Ashutosh Gowariker",
+   cast:["Aamir Khan","Gracy Singh","Rachel Shelley","Paul Blackthorne"],
+   synopsis:"Villagers in colonial India stake three years of tax on a single cricket match against their British rulers, turning a game into an act of quiet rebellion.",
+   colors:["#ca8a04","#a16207"]},
+
+  {title:"RRR", year:2022, genres:["Action","Drama"], rating:7.8, runtime:187, director:"S. S. Rajamouli",
+   cast:["N. T. Rama Rao Jr.","Ram Charan","Alia Bhatt","Ajay Devgn"],
+   synopsis:"Two revolutionaries from very different worlds cross paths under British rule, and their friendship becomes an explosive, larger-than-life tale of loyalty and uprising.",
+   colors:["#dc2626","#7f1d1d"]},
+
+  {title:"Gully Boy", year:2019, genres:["Drama","Musical"], rating:7.9, runtime:153, director:"Zoya Akhtar",
+   cast:["Ranveer Singh","Alia Bhatt","Siddhant Chaturvedi","Kalki Koechlin"],
+   synopsis:"A young man from a Mumbai slum finds his voice in street rap, chasing a dream that his circumstances were never meant to allow.",
+   colors:["#7c3aed","#4338ca"]},
+
+  {title:"Taare Zameen Par", year:2007, genres:["Drama","Family"], rating:8.3, runtime:165, director:"Aamir Khan",
+   cast:["Darsheel Safary","Aamir Khan","Tisca Chopra","Vipin Sharma"],
+   synopsis:"A dyslexic child is misunderstood by everyone until an unconventional art teacher recognises his struggle and helps him see his own brilliance.",
+   colors:["#0ea5e9","#2563eb"]},
+
+  {title:"Inception", year:2010, genres:["Sci-Fi","Thriller"], rating:8.8, runtime:148, director:"Christopher Nolan",
+   cast:["Leonardo DiCaprio","Joseph Gordon-Levitt","Elliot Page","Tom Hardy","Marion Cotillard"],
+   synopsis:"A specialist who steals secrets from inside dreams is offered one last job: plant an idea in a target's mind, a task that means going deeper than anyone has gone before.",
+   colors:["#334155","#0f172a"]},
+
+  {title:"Interstellar", year:2014, genres:["Sci-Fi","Drama"], rating:8.7, runtime:169, director:"Christopher Nolan",
+   cast:["Matthew McConaughey","Anne Hathaway","Jessica Chastain","Michael Caine"],
+   synopsis:"As Earth becomes unlivable, a former pilot leads a mission through a wormhole to find a new home for humanity, weighed down by the family he leaves behind.",
+   colors:["#1e3a8a","#0b1220"]},
+
+  {title:"The Dark Knight", year:2008, genres:["Action","Thriller"], rating:9.0, runtime:152, director:"Christopher Nolan",
+   cast:["Christian Bale","Heath Ledger","Aaron Eckhart","Michael Caine","Gary Oldman"],
+   synopsis:"Batman faces an anarchic criminal who wants to prove that anyone can be broken, forcing a hero to confront how far he will go without becoming what he fights.",
+   colors:["#111827","#374151"]},
+
+  {title:"Parasite", year:2019, genres:["Thriller","Drama"], rating:8.5, runtime:132, director:"Bong Joon-ho",
+   cast:["Song Kang-ho","Lee Sun-kyun","Cho Yeo-jeong","Choi Woo-shik"],
+   synopsis:"A struggling family schemes its way into the household of a wealthy one, and the arrangement spirals into a razor-sharp study of class, hunger and hidden rooms.",
+   colors:["#065f46","#022c22"]},
+
+  {title:"Spirited Away", year:2001, genres:["Animation","Family"], rating:8.6, runtime:125, director:"Hayao Miyazaki",
+   cast:["Rumi Hiiragi","Miyu Irino","Mari Natsuki","Takashi Naito"],
+   synopsis:"A shy girl wanders into a world of spirits and must work in a bathhouse for the gods to free her parents and find her way home.",
+   colors:["#0891b2","#7c3aed"]},
+
+  {title:"The Shawshank Redemption", year:1994, genres:["Drama"], rating:9.3, runtime:142, director:"Frank Darabont",
+   cast:["Tim Robbins","Morgan Freeman","Bob Gunton","William Sadler"],
+   synopsis:"A banker sentenced to life in prison forms an unlikely friendship and holds on to hope across decades, proving that some things no wall can take away.",
+   colors:["#92400e","#451a03"]},
+
+  {title:"Toy Story", year:1995, genres:["Animation","Comedy","Family"], rating:8.3, runtime:81, director:"John Lasseter",
+   cast:["Tom Hanks","Tim Allen","Don Rickles","Jim Varney"],
+   synopsis:"A cowboy doll's world is upended by a flashy new space toy, and the two rivals must work together to get home in the first fully computer-animated feature.",
+   colors:["#2563eb","#f59e0b"]},
+
+  {title:"Mad Max: Fury Road", year:2015, genres:["Action","Sci-Fi"], rating:8.1, runtime:120, director:"George Miller",
+   cast:["Tom Hardy","Charlize Theron","Nicholas Hoult","Hugh Keays-Byrne"],
+   synopsis:"In a scorched wasteland, a drifter and a rebel commander flee a tyrant across the desert in one relentless, roaring chase for freedom.",
+   colors:["#ea580c","#7c2d12"]},
+
+  {title:"Andhadhun", year:2018, genres:["Thriller","Comedy"], rating:8.2, runtime:139, director:"Sriram Raghavan",
+   cast:["Ayushmann Khurrana","Tabu","Radhika Apte","Anil Dhawan"],
+   synopsis:"A blind pianist becomes an accidental witness to a crime, and his carefully constructed life unravels in a twisty, darkly funny game of cat and mouse.",
+   colors:["#0f766e","#134e4a"]}
+];
+
+/* ============================================================
+   Poster art (generated SVG — no external images)
+   ============================================================ */
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+function initials(t){
+  const words=t.replace(/[^A-Za-z0-9 ]/g," ").trim().split(/\s+/);
+  if(words.length===1) return words[0].slice(0,2).toUpperCase();
+  return (words[0][0]+words[1][0]).toUpperCase();
+}
+
+function posterSVG(m, idx){
+  const [c1,c2]=m.colors;
+  const id="g"+idx;
+  // vary decorative layout a little by index
+  const deco = idx%3===0
+    ? `<circle cx="150" cy="90" r="120" fill="rgba(255,255,255,.10)"/>
+       <circle cx="40" cy="330" r="90" fill="rgba(255,255,255,.07)"/>`
+    : idx%3===1
+    ? `<rect x="-40" y="60" width="320" height="60" fill="rgba(255,255,255,.08)" transform="rotate(-18 120 90)"/>
+       <rect x="-40" y="200" width="320" height="60" fill="rgba(255,255,255,.06)" transform="rotate(-18 120 230)"/>`
+    : `<polygon points="0,420 200,180 400,420" fill="rgba(255,255,255,.07)"/>
+       <polygon points="0,420 200,270 400,420" fill="rgba(255,255,255,.06)"/>`;
+  const title=m.title.length>22 ? m.title.split(" ").slice(0,3).join(" ") : m.title;
+  return `<svg viewBox="0 0 200 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(m.title)} poster">
+    <defs>
+      <linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/>
+      </linearGradient>
+      <linearGradient id="${id}b" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="rgba(0,0,0,0)"/><stop offset="1" stop-color="rgba(0,0,0,.55)"/>
+      </linearGradient>
+    </defs>
+    <rect width="200" height="300" fill="url(#${id})"/>
+    ${deco}
+    <rect width="200" height="300" fill="url(#${id}b)"/>
+    <text x="20" y="120" font-family="Georgia, 'Times New Roman', serif" font-size="72" font-weight="700" fill="rgba(255,255,255,.30)">${esc(initials(m.title))}</text>
+    <text x="20" y="252" font-family="-apple-system, Segoe UI, Roboto, sans-serif" font-size="15" font-weight="700" fill="#ffffff">${esc(title)}</text>
+    <text x="20" y="274" font-family="-apple-system, Segoe UI, Roboto, sans-serif" font-size="11.5" font-weight="600" fill="rgba(255,255,255,.8)">${m.year} &middot; ${esc(m.genres[0])}</text>
+  </svg>`;
+}
+
+/* ============================================================
+   State + render
+   ============================================================ */
+const grid=document.getElementById("grid");
+const filtersEl=document.getElementById("filters");
+const emptyEl=document.getElementById("empty");
+const qEl=document.getElementById("q");
+
+let activeGenre="All";
+let query="";
+
+const genres=["All",...Array.from(new Set(MOVIES.flatMap(m=>m.genres))).sort()];
+
+function renderFilters(){
+  filtersEl.innerHTML=genres.map(g=>
+    `<button class="chip${g===activeGenre?" active":""}" data-g="${esc(g)}">${esc(g)}</button>`
+  ).join("");
+  filtersEl.querySelectorAll(".chip").forEach(b=>{
+    b.addEventListener("click",()=>{activeGenre=b.dataset.g;renderFilters();renderGrid();});
+  });
+}
+
+function matches(m){
+  if(activeGenre!=="All" && !m.genres.includes(activeGenre)) return false;
+  if(!query) return true;
+  const q=query.toLowerCase();
+  return m.title.toLowerCase().includes(q)
+    || m.director.toLowerCase().includes(q)
+    || m.genres.join(" ").toLowerCase().includes(q)
+    || m.cast.join(" ").toLowerCase().includes(q)
+    || String(m.year).includes(q);
+}
+
+function renderGrid(){
+  const list=MOVIES.filter(matches);
+  emptyEl.style.display=list.length?"none":"block";
+  grid.innerHTML=list.map((m,i)=>{
+    const idx=MOVIES.indexOf(m);
+    return `<article class="card" data-idx="${idx}" tabindex="0" role="button" aria-label="Open ${esc(m.title)}">
+      <div class="poster">
+        ${posterSVG(m,idx)}
+        <div class="rate"><span class="star">&#9733;</span>${m.rating.toFixed(1)}</div>
+      </div>
+      <div class="card-body">
+        <h3>${esc(m.title)}</h3>
+        <div class="meta">${m.year} &middot; ${m.runtime} min</div>
+        <div class="tags">${m.genres.map(g=>`<span class="tag">${esc(g)}</span>`).join("")}</div>
+      </div>
+    </article>`;
+  }).join("");
+  grid.querySelectorAll(".card").forEach(c=>{
+    const open=()=>openModal(MOVIES[+c.dataset.idx]);
+    c.addEventListener("click",open);
+    c.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open();}});
+  });
+}
+
+function renderStats(){
+  document.getElementById("sCount").textContent=MOVIES.length;
+  document.getElementById("sGenres").textContent=genres.length-1;
+  const ys=MOVIES.map(m=>m.year);
+  document.getElementById("sYears").textContent=Math.min(...ys)+"\u2013"+Math.max(...ys);
+}
+
+/* ---------- Modal ---------- */
+const overlay=document.getElementById("overlay");
+const modal=document.getElementById("modal");
+
+function openModal(m){
+  const idx=MOVIES.indexOf(m);
+  modal.innerHTML=`
+    <button class="close" aria-label="Close">&times;</button>
+    <div class="modal-head">
+      <div class="modal-poster">${posterSVG(m,idx)}</div>
+      <div class="modal-info">
+        <h2>${esc(m.title)}</h2>
+        <div class="sub">${m.year} &middot; ${m.runtime} min &middot; ${m.genres.join(", ")}</div>
+        <div class="stars">&#9733; ${m.rating.toFixed(1)}<span style="color:var(--muted);font-weight:500;font-size:13px;"> / 10</span></div>
+        <dl class="kv">
+          <dt>Director</dt><dd>${esc(m.director)}</dd>
+          <dt>Genres</dt><dd>${m.genres.map(esc).join(", ")}</dd>
+          <dt>Released</dt><dd>${m.year}</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="modal-body">
+      <h4>Synopsis</h4>
+      <p>${esc(m.synopsis)}</p>
+      <h4>Cast</h4>
+      <div class="cast">${m.cast.map(c=>`<span>${esc(c)}</span>`).join("")}</div>
+    </div>`;
+  overlay.classList.add("open");
+  document.body.style.overflow="hidden";
+  modal.querySelector(".close").addEventListener("click",closeModal);
+}
+
+function closeModal(){
+  overlay.classList.remove("open");
+  document.body.style.overflow="";
+}
+
+overlay.addEventListener("click",e=>{if(e.target===overlay)closeModal();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+
+let t;
+qEl.addEventListener("input",e=>{
+  clearTimeout(t);
+  t=setTimeout(()=>{query=e.target.value.trim();renderGrid();},120);
+});
+
+/* ---------- Init ---------- */
+renderStats();
+renderFilters();
+renderGrid();
+</script>
+</body>
+</html>
